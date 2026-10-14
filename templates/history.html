@@ -1,1 +1,88 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attempt History | LLD Practice</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #202b43;
+        }
+        header {
+            background: #172554;
+            color: white;
+            padding: 22px 7%;
+        }
+        main {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .attempt {
+            background: white;
+            border: 1px solid #e0e6f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .score {
+            color: #3158c9;
+            font-weight: bold;
+        }
+        a { color: #3158c9; }
+        .empty {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Attempt History</h1>
+    <p>Review your previous LLD practice submissions.</p>
+</header>
+
+<main>
+    <p><a href="/home">← Back to problems</a></p>
+
+    {% if attempts %}
+        {% for attempt in attempts %}
+        <article class="attempt">
+            <h2>{{ attempt.problem_title }}</h2>
+            <p class="score">Score: {{ attempt.score }}/100</p>
+            <p>Attempt ID: {{ attempt.id }}</p>
+            <p>Submitted: {{ attempt.created_at }}</p>
+
+            <details>
+                <summary>View submission and feedback</summary>
+                <h3>Your design</h3>
+                <p><strong>Classes:</strong> {{ attempt.submission.classes }}</p>
+                <p><strong>Relationships:</strong> {{ attempt.submission.relationships }}</p>
+
+                <h3>Feedback</h3>
+                <ul>
+                    {% for item in attempt.feedback %}
+                    <li>
+                        <strong>{{ item.criterion }}:</strong>
+                        {{ item.status }} — {{ item.suggestion }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </details>
+        </article>
+        {% endfor %}
+    {% else %}
+        <section class="empty">
+            <h2>No attempts yet</h2>
+            <p>Choose a problem and submit your first design.</p>
+            <a href="/home">Explore practice problems</a>
+        </section>
+    {% endif %}
+</main>
+</body>
+</html>

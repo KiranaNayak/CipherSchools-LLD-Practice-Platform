@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLD Practice Platform</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #202b43;
+        }
+        header {
+            background: #172554;
+            color: white;
+            padding: 24px 7%;
+        }
+        header h1 { margin: 0 0 8px; }
+        main {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+        .intro { margin-bottom: 28px; }
+        .problems {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #e0e6f0;
+            box-shadow: 0 4px 12px #1725540a;
+        }
+        .difficulty { color: #5266a5; font-size: 14px; }
+        .card a {
+            display: inline-block;
+            margin-top: 12px;
+            background: #3158c9;
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 7px;
+        }
+        .history { margin-top: 32px; }
+        @media (max-width: 600px) {
+            header { padding: 22px; }
+            main { margin-top: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>LLD Practice Platform</h1>
+        <p>Practice your design. Understand your decisions. Improve every attempt.</p>
+    </header>
+
+    <main>
+        <section class="intro">
+            <h2>Choose a practice problem</h2>
+            <p>Select a problem and submit your low-level design for feedback.</p>
+        </section>
+
+        <section class="problems">
+            {% for problem in problems %}
+            <article class="card">
+                <p class="difficulty">{{ problem.difficulty }} difficulty</p>
+                <h3>{{ problem.title }}</h3>
+                <p>{{ problem.description }}</p>
+                <a href="/practice/{{ problem.id }}">Start practice</a>
+            </article>
+            {% endfor %}
+        </section>
+
+        <section class="history">
+            <a href="/history">View my attempt history</a>
+        </section>
+    </main>
+</body>
+</html>

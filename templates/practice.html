@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ problem.title }} | LLD Practice</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #202b43;
+        }
+        header {
+            background: #172554;
+            color: white;
+            padding: 20px 7%;
+        }
+        main {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .panel {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin: 18px 0 8px;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 85px;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font: inherit;
+        }
+        button {
+            margin-top: 20px;
+            background: #3158c9;
+            color: white;
+            border: 0;
+            border-radius: 7px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        a { color: #3158c9; }
+        #result { margin-top: 20px; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>LLD Practice Platform</h1>
+    <p>Think through your design before submitting.</p>
+</header>
+
+<main>
+    <p><a href="/home">← Back to problems</a></p>
+
+    <section class="panel">
+        <h2>{{ problem.title }}</h2>
+        <p>{{ problem.description }}</p>
+        <h3>Requirements</h3>
+        <ul>
+            {% for requirement in problem.requirements %}
+            <li>{{ requirement }}</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <form id="design-form" class="panel">
+        <h2>Your design</h2>
+        <input type="hidden" id="problem_id" value="{{ problem.id }}">
+
+        <label for="assumptions">1. Assumptions and requirements</label>
+        <textarea id="assumptions" required
+            placeholder="What assumptions are you making?"></textarea>
+
+        <label for="classes">2. Classes and responsibilities</label>
+        <textarea id="classes" required
+            placeholder="List each class and explain its responsibilities."></textarea>
+
+        <label for="relationships">3. Relationships</label>
+        <textarea id="relationships" required
+            placeholder="Explain how your classes interact."></textarea>
+
+        <label for="key_flows">4. Key flows</label>
+        <textarea id="key_flows" required
+            placeholder="Explain the steps in an important operation."></textarea>
+
+        <label for="tradeoffs">5. Design trade-offs</label>
+        <textarea id="tradeoffs" required
+            placeholder="Explain your design choices and possible improvements."></textarea>
+
+        <button type="submit">Submit design</button>
+        <div id="result" aria-live="polite"></div>
+    </form>
+</main>
+
+<script>
+document.getElementById("design-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const result = document.getElementById("result");
+    result.textContent = "Evaluating your design...";
+
+    const data = {
+        problem_id: Number(document.getElementById("problem_id").value),
+        assumptions: document.getElementById("assumptions").value,
+        classes: document.getElementById("classes").value,
+        relationships: document.getElementById("relationships").value,
+        key_flows: document.getElementById("key_flows").value,
+        tradeoffs: document.getElementById("tradeoffs").value
+    };
+
+    try {
+        const response = await fetch("/api/submit", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data)
+        });
+
+        const body = await response.json();
+
+        if (!response.ok) {
+            throw new Error(body.detail || "Submission failed.");
+        }
+
+        const evaluation = body.evaluation;
+        result.replaceChildren();
+
+        const heading = document.createElement("h3");
+        heading.textContent = `Score: ${evaluation.score}/100`;
+        result.appendChild(heading);
+
+        const list = document.createElement("ul");
+
+        evaluation.feedback.forEach(item => {
+            const entry = document.createElement("li");
+            entry.textContent =
+                `${item.criterion}: ${item.status} — ${item.suggestion}`;
+            list.appendChild(entry);
+        });
+
+        result.appendChild(list);
+
+        const historyLink = document.createElement("a");
+        historyLink.href = "/history";
+        historyLink.textContent = "View attempt history";
+        result.appendChild(historyLink);
+
+    } catch (error) {
+        result.textContent = error.message;
+    }
+});
+</script>
+</body>
+</html>
